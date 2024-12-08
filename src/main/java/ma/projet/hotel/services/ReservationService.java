@@ -1,12 +1,14 @@
 package ma.projet.hotel.services;
 
+import ma.projet.hotel.entities.Chambre;
 import ma.projet.hotel.entities.Reservation;
+import ma.projet.hotel.repositories.ChambreRepository;
+import ma.projet.hotel.repositories.ClientRepository;
 import ma.projet.hotel.repositories.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ReservationService {
@@ -14,12 +16,19 @@ public class ReservationService {
     @Autowired
     private ReservationRepository reservationRepository;
 
-    public Reservation createReservation(Reservation reservation) {
-        return reservationRepository.save(reservation);
-    }
+    @Autowired
+    private ClientRepository clientRepository;
 
-    public Optional<Reservation> getReservation(Long id) {
-        return reservationRepository.findById(id);
+    @Autowired
+    private ChambreRepository chambreRepository;
+
+    public Reservation createReservation(Reservation reservation) {
+        Chambre chambre = chambreRepository.findById(reservation.getChambre().getId())
+            .orElseThrow(() -> new RuntimeException("Chambre non trouvée"));
+        if (!chambre.isDisponible()) {
+            throw new RuntimeException("La chambre sélectionnée n'est pas disponible pour la réservation.");
+        }
+        return reservationRepository.save(reservation);
     }
 
     public List<Reservation> getAllReservations() {
@@ -27,20 +36,19 @@ public class ReservationService {
     }
 
     public Reservation updateReservation(Long id, Reservation reservationDetails) {
-        Optional<Reservation> reservation = reservationRepository.findById(id);
-        if (reservation.isPresent()) {
-            Reservation existingReservation = reservation.get();
-            existingReservation.setClient(reservationDetails.getClient());
-            existingReservation.setChambre(reservationDetails.getChambre());
-            existingReservation.setDateDebut(reservationDetails.getDateDebut());
-            existingReservation.setDateFin(reservationDetails.getDateFin());
-            existingReservation.setPreferences(reservationDetails.getPreferences());
-            return reservationRepository.save(existingReservation);
-        }
-        return null;
+        Reservation reservation = reservationRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Reservation not found"));
+
+        reservation.setDateDebut(reservationDetails.getDateDebut());
+        reservation.setDateFin(reservationDetails.getDateFin());
+        reservation.setPreferences(reservationDetails.getPreferences());
+
+        return reservationRepository.save(reservation);
     }
 
     public void deleteReservation(Long id) {
-        reservationRepository.deleteById(id);
+        Reservation reservation = reservationRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Réservation introuvable pour l'id : " + id));
+        reservationRepository.delete(reservation);
     }
 }

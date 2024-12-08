@@ -14,17 +14,18 @@ public class Reservation {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "client_id", nullable = false)
+    @JoinColumn(name = "client_id")
     private Client client;
 
     @ManyToOne
-    @JoinColumn(name = "chambre_id", nullable = false)
+    @JoinColumn(name = "chambre_id")
     private Chambre chambre;
 
     private LocalDate dateDebut;
     private LocalDate dateFin;
     private String preferences;
 
-    // Getters and setters
+  
 }
+
 
