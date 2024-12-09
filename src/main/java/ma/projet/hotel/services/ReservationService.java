@@ -1,5 +1,6 @@
 package ma.projet.hotel.services;
 
+import ma.projet.hotel.entities.Client;
 import ma.projet.hotel.entities.Chambre;
 import ma.projet.hotel.entities.Reservation;
 import ma.projet.hotel.repositories.ChambreRepository;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ReservationService {
@@ -22,30 +24,61 @@ public class ReservationService {
     @Autowired
     private ChambreRepository chambreRepository;
 
+    public ReservationService(ReservationRepository reservationRepository) {
+        this.reservationRepository = reservationRepository;
+    }
+
     public Reservation createReservation(Reservation reservation) {
-        Chambre chambre = chambreRepository.findById(reservation.getChambre().getId())
-            .orElseThrow(() -> new RuntimeException("Chambre non trouvée"));
-        if (!chambre.isDisponible()) {
-            throw new RuntimeException("La chambre sélectionnée n'est pas disponible pour la réservation.");
+        // Vérification de la présence des objets liés
+        if (reservation == null) {
+            throw new IllegalArgumentException("La réservation ne peut pas être null.");
         }
+        if (reservation.getChambre() == null) {
+            throw new IllegalArgumentException("La chambre est obligatoire pour créer une réservation.");
+        }
+        if (reservation.getClient() == null) {
+            throw new IllegalArgumentException("Le client est obligatoire pour créer une réservation.");
+        }
+
+        // Vérification des ID des entités liées
+        Chambre chambre = reservation.getChambre();
+        if (chambre.getId() == null) {
+            throw new IllegalArgumentException("La chambre doit avoir un ID valide.");
+        }
+        Client client = reservation.getClient();
+        if (client.getId() == null) {
+            throw new IllegalArgumentException("Le client doit avoir un ID valide.");
+        }
+
+        // Si toutes les validations passent, enregistrer la réservation
         return reservationRepository.save(reservation);
     }
+
 
     public List<Reservation> getAllReservations() {
         return reservationRepository.findAll();
     }
 
-    public Reservation updateReservation(Long id, Reservation reservationDetails) {
-        Reservation reservation = reservationRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Reservation not found"));
+    public Reservation updateReservation(Long id, Reservation updatedReservation) {
+        Reservation existingReservation = reservationRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Réservation introuvable pour l'id : " + id));
 
-        reservation.setDateDebut(reservationDetails.getDateDebut());
-        reservation.setDateFin(reservationDetails.getDateFin());
-        reservation.setPreferences(reservationDetails.getPreferences());
+        // Mettez à jour les champs existants
+        existingReservation.setDateDebut(updatedReservation.getDateDebut());
+        existingReservation.setDateFin(updatedReservation.getDateFin());
+        existingReservation.setPreferences(updatedReservation.getPreferences());
+        existingReservation.setClient(updatedReservation.getClient());
+        existingReservation.setChambre(updatedReservation.getChambre());
 
-        return reservationRepository.save(reservation);
+        return reservationRepository.save(existingReservation);
     }
-
+    public Optional<Reservation> getReservationById(Long id) {
+        Optional<Reservation> reservation = reservationRepository.findById(id);
+        if (reservation == null) {
+            throw new RuntimeException("Réservation introuvable pour l'id : " + id);
+        }
+        return reservation;
+    }
     public void deleteReservation(Long id) {
         Reservation reservation = reservationRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Réservation introuvable pour l'id : " + id));

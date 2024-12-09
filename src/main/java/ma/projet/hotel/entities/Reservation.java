@@ -21,8 +21,8 @@ public class Reservation {
     @JoinColumn(name = "chambre_id")
     private Chambre chambre;
 
-    private LocalDate dateDebut;
-    private LocalDate dateFin;
+    private String dateDebut;
+    private String dateFin;
     private String preferences;
 
   
