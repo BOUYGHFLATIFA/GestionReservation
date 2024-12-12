@@ -5,10 +5,16 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlTransient;
 import lombok.Data;
 
 @Entity
 @Data
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +27,7 @@ public class Client {
     
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
     @JsonIgnore
+    @XmlTransient
     private List<Reservation> reservations;
 
 
