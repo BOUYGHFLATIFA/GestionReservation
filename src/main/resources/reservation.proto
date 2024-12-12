@@ -1,0 +1,94 @@
+syntax = "proto3";
+
+option java_package = "ma.projet.hotel.grpc";
+option java_multiple_files = true;
+
+service ReservationService {
+  // Méthodes pour les réservations
+  rpc CreateReservation (CreateReservationRequest) returns (ReservationResponse);
+  rpc UpdateReservation (UpdateReservationRequest) returns (ReservationResponse);
+  rpc GetAllReservations (GetAllReservationsRequest) returns (GetAllReservationsResponse);
+  rpc GetReservationById (GetReservationByIdRequest) returns (ReservationResponse);
+  rpc DeleteReservation (DeleteReservationRequest) returns (DeleteReservationResponse);
+
+  // Méthodes pour les clients
+  rpc CreateClient (CreateClientRequest) returns (CreateClientResponse);
+
+  // Méthodes pour les chambres
+  rpc CreateChambre (CreateChambreRequest) returns (CreateChambreResponse);
+}
+
+// Messages pour les réservations
+message CreateReservationRequest {
+  string client_id = 1;
+  string chambre_id = 2;
+  string date_debut = 3;
+  string date_fin = 4;
+  string preferences = 5;
+}
+
+message UpdateReservationRequest {
+  string id = 1;
+  string client_id = 2;
+  string chambre_id = 3;
+  string date_debut = 4;
+  string date_fin = 5;
+  string preferences = 6;
+}
+
+message GetReservationByIdRequest {
+  string id = 1;
+}
+
+message DeleteReservationRequest {
+  string id = 1;
+}
+
+message ReservationResponse {
+  string id = 1;
+  string client_name = 2;
+  string chambre_number = 3;
+  string date_debut = 4;
+  string date_fin = 5;
+  string preferences = 6;
+}
+
+message GetAllReservationsRequest {}
+
+message GetAllReservationsResponse {
+  repeated ReservationResponse reservations = 1;
+}
+
+message DeleteReservationResponse {
+  string message = 1;
+}
+
+// Messages pour les clients
+message CreateClientRequest {
+  string nom = 1;
+  string prenom = 2;
+  string email = 3;
+  string telephone = 4;
+}
+
+message CreateClientResponse {
+  string id = 1;
+  string nom = 2;
+  string prenom = 3;
+  string email = 4;
+  string telephone = 5;
+}
+
+// Messages pour les chambres
+message CreateChambreRequest {
+  string type = 1;
+  double prix = 2;
+  bool disponible = 3;
+}
+
+message CreateChambreResponse {
+  string id = 1;
+  string type = 2;
+  double prix = 3;
+  bool disponible = 4;
+}

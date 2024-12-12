@@ -10,11 +10,13 @@ import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlTransient;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
+@NoArgsConstructor
 public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
