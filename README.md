@@ -1,1 +1,1 @@
-Gestion_Reservation avec REST
+Gestion_Reservation avec REST, GraphQl, SOAP
