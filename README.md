@@ -1,3 +1,1 @@
 Gestion_Reservation avec REST
-Gestion_Reservation avec GraphQl
-Gestion_Reservation avec SOAP
